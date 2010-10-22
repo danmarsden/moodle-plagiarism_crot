@@ -72,7 +72,7 @@ pl * plagiarism.php - allows the admin to configure plagiarism stuff
     }
     $plagiarismsettings = (array)get_config('plagiarism');
     $mform->set_data($plagiarismsettings);
-    
+
     echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
     $mform->display();
     echo $OUTPUT->box_end();
