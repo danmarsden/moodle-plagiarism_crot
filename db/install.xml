@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="crot_submission_pair" COMMENT="crot_assignment_submission_pair table. It stores information about number of same hashes in the pair of submissions" NEXT="crot_assignments">
+    <TABLE NAME="crot_submission_pair" COMMENT="crot_assignment_submission_pair table. It stores information about number of same hashes in the pair of submissions" NEXT="crot_config">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="submission_a_id"/>
         <FIELD NAME="submission_a_id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="submission_b_id"/>
@@ -15,18 +15,18 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="crot_assignments" COMMENT="crot_assignments table contain settings for search for each assignment" PREVIOUS="crot_submission_pair" NEXT="crot_fingerprint">
+    <TABLE NAME="crot_config" COMMENT="contains crot specific settings for each course module" PREVIOUS="crot_submission_pair" NEXT="crot_fingerprint">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="assignment_id"/>
-        <FIELD NAME="assignment_id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="is_local"/>
-        <FIELD NAME="is_local" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="assignment_id" NEXT="is_global"/>
-        <FIELD NAME="is_global" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="is_local"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="cm"/>
+        <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="text" LENGTH="small" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="cm" NEXT="value"/>
+        <FIELD NAME="value" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" PREVIOUS="name"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="crot_fingerprint" COMMENT="crot_fingerprint table: it keeps hash values for all the documents processed by crot" PREVIOUS="crot_assignments" NEXT="crot_submissions">
+    <TABLE NAME="crot_fingerprint" COMMENT="crot_fingerprint table: it keeps hash values for all the documents processed by crot" PREVIOUS="crot_config" NEXT="crot_submissions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="position"/>
         <FIELD NAME="position" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="crot_doc_id"/>

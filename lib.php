@@ -56,7 +56,28 @@ class plagiarism_plugin_crot extends plagiarism_plugin {
      * @param object $data - data from an mform submission.
     */
     public function save_form_elements($data) {
+        $plagiarismsettings = (array)get_config('plagiarism');
+        if (!empty($plagiarismsettings['crot_use'])) {
+            if (isset($data->use_crot)) {
+                //array of posible plagiarism config options.
+                $plagiarismelements = $this->config_options();
+                //first get existing values
+                $existingelements = $DB->get_records_menu('crot_config', array('cm'=>$data->coursemodule),'','name,id');
+                foreach($plagiarismelements as $element) {
+                    $newelement = new object();
+                    $newelement->cm = $data->coursemodule;
+                    $newelement->name = $element;
+                    $newelement->value = (isset($data->$element) ? $data->$element : 0);
+                    if (isset($existingelements[$element])) { //update
+                        $newelement->id = $existingelements[$element];
+                        $DB->update_record('crot_config', $newelement);
+                    } else { //insert
+                        $DB->insert_record('crot_config', $newelement);
+                    }
+                }
 
+            }
+        }
     }
 
     /**
@@ -113,6 +134,9 @@ class plagiarism_plugin_crot extends plagiarism_plugin {
      */
     public function cron() {
         //do any scheduled task stuff
+    }
+    public function config_options() {
+        return array('crot_use','crot_local', 'crot_global');
     }
 }
 
