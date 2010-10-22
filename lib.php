@@ -65,10 +65,24 @@ class plagiarism_plugin_crot extends plagiarism_plugin {
      * @param object $context - current context
      */
     public function get_form_elements_module($mform, $context) {
+        $plagiarismsettings = (array)get_config('plagiarism');
+        if (!empty($plagiarismsettings['crot_use'])) {
+            $ynoptions = array( 0 => get_string('no'), 1 => get_string('yes'));
+            $mform->addElement('header', 'crotdesc', get_string('crot', 'plagiarism_crot'));
+            $mform->addElement('select', 'use_crot', get_string("usecrot", "plagiarism_crot"), $ynoptions);
+
+            $mform->addElement('text', 'crot_grammarsize', get_string('grammar_size', 'plagiarism_crot'));
+            $mform->setDefault('crot_grammarsize', $plagiarismsettings['crot_grammarsize']);
+            $mform->addRule('crot_grammarsize', null, 'numeric', null, 'client');
+            $mform->disabledIf('crot_grammarsize', 'use_crot', 'eq', 0);
+            $mform->addElement('text', 'crot_threshold', get_string('default_threshold', 'plagiarism_crot'));
+            $mform->setDefault('crot_threshold', $plagiarismsettings['crot_global_threshold']);
+            $mform->addRule('crot_threshold', null, 'numeric', null, 'client');
+            $mform->disabledIf('crot_threshold', 'use_crot', 'eq', 0);
+        }
         //Add elements to form using standard mform like:
         //$mform->addElement('hidden', $element);
         //$mform->disabledIf('plagiarism_draft_submit', 'var4', 'eq', 0);
-
     }
 
     /**
@@ -106,13 +120,13 @@ class plagiarism_plugin_crot extends plagiarism_plugin {
     }
 }
 
-function event_file_uploaded($eventdata) {
+function crot_event_file_uploaded($eventdata) {
     $result = true;
         //a file has been uploaded - submit this to the plagiarism prevention service.
 
     return $result;
 }
-function event_files_done($eventdata) {
+function crot_event_files_done($eventdata) {
     $result = true;
         //mainly used by assignment finalize - used if you want to handle "submit for marking" events
         //a file has been uploaded/finalised - submit this to the plagiarism prevention service.
@@ -120,7 +134,7 @@ function event_files_done($eventdata) {
     return $result;
 }
 
-function event_mod_created($eventdata) {
+function crot_event_mod_created($eventdata) {
     $result = true;
         //a new module has been created - this is a generic event that is called for all module types
         //make sure you check the type of module before handling if needed.
@@ -128,7 +142,7 @@ function event_mod_created($eventdata) {
     return $result;
 }
 
-function event_mod_updated($eventdata) {
+function crot_event_mod_updated($eventdata) {
     $result = true;
         //a module has been updated - this is a generic event that is called for all module types
         //make sure you check the type of module before handling if needed.
@@ -136,7 +150,7 @@ function event_mod_updated($eventdata) {
     return $result;
 }
 
-function event_mod_deleted($eventdata) {
+function crot_event_mod_deleted($eventdata) {
     $result = true;
         //a module has been deleted - this is a generic event that is called for all module types
         //make sure you check the type of module before handling if needed.
