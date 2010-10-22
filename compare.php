@@ -31,21 +31,22 @@ padding:2px; height:300px; overflow:scroll; border-width:2px; border-style:outse
  */
 
 	require_once("../../config.php");
-	global $CFG;
+	global $CFG, $DB;
 	require_once($CFG->dirroot."/plagiarism/crot/lib.php");
 	require_once($CFG->dirroot."/plagiarism/crot/locallib.php");
 	require_once($CFG->dirroot."/course/lib.php");
 	require_once($CFG->dirroot."/mod/assignment/lib.php");
 	
 	// globals
-	$minclustersize = $CFG->block_crot_clustersize;
-	$distfragments  = $CFG->block_crot_clusterdist;
-	$allColors	= explode(",", $CFG->block_crot_colours);
+	$plagiarismsettings = (array)get_config('plagiarism');
+	$minclustersize = $plagiarismsettings['crot_clustersize'];
+	$distfragments  = $plagiarismsettings['crot_clusterdist'];
+	$allColors	= explode(",", $plagiarismsettings['crot_colours']);
 
 	$ida = required_param('ida', PARAM_INT);   // submission A
 	$idb = required_param('idb', PARAM_INT);   // submission B
 
-	if (! $submA = get_record("crot_documents", "id", $ida)) {
+	if (! $submA = $DB->get_record("crot_documents", array("id"=> $ida))) {
 		error("Doc A ID is incorrect");
 	}
 	if ($submA->crot_submission_id == 0)
@@ -55,7 +56,7 @@ padding:2px; height:300px; overflow:scroll; border-width:2px; border-style:outse
 		$isWebA = false;
 	}
 	
-	if (! $submB = get_record("crot_documents", "id", $idb)) {
+	if (! $submB = $DB->get_record("crot_documents", array("id"=> $idb))) {
 		error("Doc B ID is incorrect");
 	}
 
@@ -67,16 +68,16 @@ padding:2px; height:300px; overflow:scroll; border-width:2px; border-style:outse
 	}
 
     	// TODO get global assignment id
-	$a1 = get_record("crot_submissions", "id", $submA->crot_submission_id);
+	$a1 = $DB->get_record("crot_submissions", array("id"=>$submA->crot_submission_id));
 	$b1 = get_record("crot_submissions", "id", $submB->crot_submission_id);
 	if (!$isWebA) {
-		if (! $subA = get_record("assignment_submissions", "id", $a1->submissionid))  {
+		if (! $subA = $DB->get_record("assignment_submissions", array("id"=> $a1->submissionid)))  {
 			error("Submission A ID is incorrect");
 		}
-		if (! $assignA = get_record("assignment", "id", $subA->assignment)) {
+		if (! $assignA = $DB->get_record("assignment", array("id"=>$subA->assignment))) {
 			error("Assignment A ID is incorrect");
 		}
-		if (! $courseA = get_record("course", "id", $assignA->course)) {
+		if (! $courseA = $DB->get_record("course", array("id"=>$assignA->course))) {
 			error("Course A ID is incorrect");
 		}
 
@@ -86,18 +87,19 @@ padding:2px; height:300px; overflow:scroll; border-width:2px; border-style:outse
 		}
 	}
 	if (!$isWebB) {
-		if (! $subB = get_record("assignment_submissions", "id", $b1->submissionid)) {
+		if (! $subB = $DB->get_record("assignment_submissions", array("id"=>$b1->submissionid))) {
 			error("Submission B ID is incorrect");
 		}
-		if (! $assignB = get_record("assignment", "id", $subB->assignment)) {
+		if (! $assignB = $DB->get_record("assignment", array("id"=> $subB->assignment))) {
 			error("Assignment B ID is incorrect");
 		}
 
-	if (! $courseB = get_record("course", "id", $assignB->course)) {
+	if (! $courseB = $DB->get_record("course", array("id"=> $assignB->course))) {
 			error("Course B ID is incorrect");
 		}
 		
 		require_course_login($courseB);
+		//TODO: need to change to use a has_capability call here.
 		if (!isteacher($courseB->id)) {
 			error(get_string('have_to_be_a_teacher', 'block_crot'));
 		}
@@ -124,10 +126,10 @@ padding:2px; height:300px; overflow:scroll; border-width:2px; border-style:outse
 
 	// get all hashes for docA
 	$sql_query = "SELECT * FROM {$CFG->prefix}crot_fingerprint f WHERE crot_doc_id = $ida ORDER BY position asc";
-	$hashesA = get_records_sql($sql_query);
+	$hashesA = $DB->get_records_sql($sql_query);
 	// get all hashes for document B
 	$sql_query = "SELECT * FROM {$CFG->prefix}crot_fingerprint f WHERE crot_doc_id = $idb ORDER BY position asc";
-	$hashesB = get_records_sql($sql_query);
+	$hashesB = $DB->get_records_sql($sql_query);
 
 	// TODO create separate function for coloring ?
 	$sameHashA = array ();
@@ -298,7 +300,7 @@ padding:2px; height:300px; overflow:scroll; border-width:2px; border-style:outse
 		}
 	}
 	else {
-		$wdoc = get_record("crot_web_documents", "document_id", $ida);
+		$wdoc = $db->get_record("crot_web_documents", array("document_id"=>$ida));
 		if (strlen($wdoc->link)>40) {
 			$linkname = substr($wdoc->link,0,40);
 		}
@@ -310,7 +312,7 @@ padding:2px; height:300px; overflow:scroll; border-width:2px; border-style:outse
 	
 	// get name B
 	if (!$isWebB) {
-	if (! $studentB = get_record("user", "id", $subB->userid)) {
+	if (! $studentB = $DB->get_record("user", array("id"=>$subB->userid))) {
 		$strstudentB = "name is unknown";
 		} 
 		else {
@@ -318,7 +320,7 @@ padding:2px; height:300px; overflow:scroll; border-width:2px; border-style:outse
 		}
 	}
 	else {
-		$wdoc = get_record("crot_web_documents", "document_id", $idb);
+		$wdoc = $DB->get_record("crot_web_documents", array("document_id"=>$idb));
 		if (strlen($wdoc->link)>40) {
 			$linkname = substr($wdoc->link,0,40);
 		}
