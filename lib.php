@@ -56,9 +56,10 @@ class plagiarism_plugin_crot extends plagiarism_plugin {
      * @param object $data - data from an mform submission.
     */
     public function save_form_elements($data) {
+        global $DB;
         $plagiarismsettings = (array)get_config('plagiarism');
         if (!empty($plagiarismsettings['crot_use'])) {
-            if (isset($data->use_crot)) {
+            if (isset($data->crot_use)) {
                 //array of posible plagiarism config options.
                 $plagiarismelements = $this->config_options();
                 //first get existing values
@@ -86,8 +87,15 @@ class plagiarism_plugin_crot extends plagiarism_plugin {
      * @param object $context - current context
      */
     public function get_form_elements_module($mform, $context) {
+        global $DB;
         $plagiarismsettings = (array)get_config('plagiarism');
         if (!empty($plagiarismsettings['crot_use'])) {
+            $cmid = optional_param('update', 0, PARAM_INT); //there doesn't seem to be a way to obtain the current cm a better way - $this->_cm is not available here.
+            if (!empty($cmid)) {
+                $plagiarismvalues = $DB->get_records_menu('crot_config', array('cm'=>$cmid),'','name,value');
+            }
+            $plagiarismelements = $this->config_options();
+
             $ynoptions = array( 0 => get_string('no'), 1 => get_string('yes'));
             $mform->addElement('header', 'crotdesc', get_string('crot', 'plagiarism_crot'));
             $mform->addElement('select', 'crot_use', get_string("usecrot", "plagiarism_crot"), $ynoptions);
@@ -96,6 +104,12 @@ class plagiarism_plugin_crot extends plagiarism_plugin {
             $mform->setDefault('crot_local', '1');
             $mform->addElement('select', 'crot_global', get_string("compareinternet", "plagiarism_crot"), $ynoptions);
             $mform->disabledIf('crot_global', 'crot_use', 'eq', 0);
+            
+            foreach ($plagiarismelements as $element) {
+                if (isset($plagiarismvalues[$element])) {
+                    $mform->setDefault($element, $plagiarismvalues[$element]);
+                }
+            }
         }
         //Add elements to form using standard mform like:
         //$mform->addElement('hidden', $element);

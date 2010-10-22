@@ -23,7 +23,9 @@
         <FIELD NAME="value" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" PREVIOUS="name"/>
       </FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>
+        <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" PREVIOUS="primary"/>
+        
       </KEYS>
     </TABLE>
     <TABLE NAME="crot_fingerprint" COMMENT="crot_fingerprint table: it keeps hash values for all the documents processed by crot" PREVIOUS="crot_config" NEXT="crot_submissions">
