@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="blocks/crot/db" VERSION="20091007" COMMENT="XMLDB file for Moodle blocks/crot"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="crot_submission_pair" COMMENT="crot_assignment_submission_pair table. It stores information about number of same hashes in the pair of submissions" NEXT="crot_assignments">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="submission_a_id"/>
+        <FIELD NAME="submission_a_id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="submission_b_id"/>
+        <FIELD NAME="submission_b_id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="submission_a_id" NEXT="number_of_same_hashes"/>
+        <FIELD NAME="number_of_same_hashes" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="submission_b_id"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="crot_assignments" COMMENT="crot_assignments table contain settings for search for each assignment" PREVIOUS="crot_submission_pair" NEXT="crot_fingerprint">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="assignment_id"/>
+        <FIELD NAME="assignment_id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="is_local"/>
+        <FIELD NAME="is_local" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="assignment_id" NEXT="is_global"/>
+        <FIELD NAME="is_global" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="is_local"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="crot_fingerprint" COMMENT="crot_fingerprint table: it keeps hash values for all the documents processed by crot" PREVIOUS="crot_assignments" NEXT="crot_submissions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="position"/>
+        <FIELD NAME="position" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="crot_doc_id"/>
+        <FIELD NAME="crot_doc_id" TYPE="int" LENGTH="11" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="position" NEXT="value"/>
+        <FIELD NAME="value" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="crot_doc_id"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_docid_value" UNIQUE="false" FIELDS="crot_doc_id, value"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="crot_submissions" COMMENT="crot_submissions table retrofitted from MySQL" PREVIOUS="crot_fingerprint" NEXT="crot_documents">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="submissionid"/>
+        <FIELD NAME="submissionid" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="updated"/>
+        <FIELD NAME="updated" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="submissionid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="crot_documents" COMMENT="Keeps the documents from submissions as well as downloaded web documents" PREVIOUS="crot_submissions" NEXT="crot_web_documents">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="content"/>
+        <FIELD NAME="content" TYPE="binary" LENGTH="small" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="the plain text" PREVIOUS="id" NEXT="crot_submission_id"/>
+        <FIELD NAME="crot_submission_id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="content"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_crot_subm_id" UNIQUE="false" FIELDS="crot_submission_id"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="crot_web_documents" COMMENT="this is to save URL for web documents" PREVIOUS="crot_documents">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="document_id"/>
+        <FIELD NAME="document_id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="link"/>
+        <FIELD NAME="link" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="document_id" NEXT="link_live"/>
+        <FIELD NAME="link_live" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" ENUM="false" PREVIOUS="link" NEXT="is_from_cache"/>
+        <FIELD NAME="is_from_cache" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="link_live" NEXT="related_doc_id"/>
+        <FIELD NAME="related_doc_id" TYPE="int" LENGTH="20" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="is_from_cache"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_link" UNIQUE="false" FIELDS="link"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
