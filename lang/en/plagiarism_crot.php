@@ -26,8 +26,11 @@ $string['studentdisclosure'] = 'Student Disclosure';
 $string['studentdisclosure_help'] = 'This text will be displayed to all students on the file upload page.';
 $string['newexplain'] = 'For more information on this plugin see: ';
 $string['crot'] = 'Crot';
+$string['crotexplain'] = 'Crot is an anti-plagiarism tool: it compares assignments copied from peers from the same institution as well as assignments copied from the Internet. It uses document fingerprinting technologies for internal document comparison and the MSN Live search engine to perform global search.<br/><br/>More information can be found at <a href="http://www.siberiasoft.info">www.siberiasoft.info</a>';
+
 $string['usecrot'] ='Enable Crot';
 $string['savedconfigsuccess'] = 'Plagiarism Settings Saved';
+
 
 //strings copied from block - probably need reworking for new plugin
 $string['block_name'] = 'Anti-Plagiarism';
