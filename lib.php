@@ -69,16 +69,12 @@ class plagiarism_plugin_crot extends plagiarism_plugin {
         if (!empty($plagiarismsettings['crot_use'])) {
             $ynoptions = array( 0 => get_string('no'), 1 => get_string('yes'));
             $mform->addElement('header', 'crotdesc', get_string('crot', 'plagiarism_crot'));
-            $mform->addElement('select', 'use_crot', get_string("usecrot", "plagiarism_crot"), $ynoptions);
-
-            $mform->addElement('text', 'crot_grammarsize', get_string('grammar_size', 'plagiarism_crot'));
-            $mform->setDefault('crot_grammarsize', $plagiarismsettings['crot_grammarsize']);
-            $mform->addRule('crot_grammarsize', null, 'numeric', null, 'client');
-            $mform->disabledIf('crot_grammarsize', 'use_crot', 'eq', 0);
-            $mform->addElement('text', 'crot_threshold', get_string('default_threshold', 'plagiarism_crot'));
-            $mform->setDefault('crot_threshold', $plagiarismsettings['crot_global_threshold']);
-            $mform->addRule('crot_threshold', null, 'numeric', null, 'client');
-            $mform->disabledIf('crot_threshold', 'use_crot', 'eq', 0);
+            $mform->addElement('select', 'crot_use', get_string("usecrot", "plagiarism_crot"), $ynoptions);
+            $mform->addElement('select', 'crot_local', get_string("comparestudents", "plagiarism_crot"), $ynoptions);
+            $mform->disabledIf('crot_local', 'crot_use', 'eq', 0);
+            $mform->setDefault('crot_local', '1');
+            $mform->addElement('select', 'crot_global', get_string("compareinternet", "plagiarism_crot"), $ynoptions);
+            $mform->disabledIf('crot_global', 'crot_use', 'eq', 0);
         }
         //Add elements to form using standard mform like:
         //$mform->addElement('hidden', $element);

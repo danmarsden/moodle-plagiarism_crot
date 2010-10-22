@@ -30,7 +30,8 @@ $string['crotexplain'] = 'Crot is an anti-plagiarism tool: it compares assignmen
 
 $string['usecrot'] ='Enable Crot';
 $string['savedconfigsuccess'] = 'Plagiarism Settings Saved';
-
+$string['compareinternet'] = 'Compare submitted files with Internet';
+$string['comparestudents'] = 'Compare submitted files with other students files';
 
 //strings copied from block - probably need reworking for new plugin
 $string['block_name'] = 'Anti-Plagiarism';
