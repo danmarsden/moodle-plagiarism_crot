@@ -48,6 +48,7 @@ class plagiarism_plugin_crot extends plagiarism_plugin {
         $file = $linkarray['file'];
         $output = '';
         //add link/information about this file to $output
+        // retrieve total similarity score and print it here along with link to the detailed report
          
         return $output;
     }
